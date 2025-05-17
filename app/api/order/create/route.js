@@ -27,16 +27,22 @@ export async function POST(request) {
             data: {
                 userId,
                 address,
-                items,
+                products: items,
                 amount: amount + Math.floor(amount * 0.02),
                 date: Date.now()
             }
         })
 
         //clear user cart
-        const user = await User.findById(userId)
-        user.cart = {}
-        await user.save()
+        const user = await User.findById(userId);
+        if (!user) {
+            return NextResponse.json({
+                success: false,
+                message: "User not found in DB"
+            });
+        }
+        user.cart = {};
+        await user.save();
 
         return NextResponse.json({success: true, message: "Order Placed"})
 
